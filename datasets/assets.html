@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assets Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 800px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            width: 250px;
+            text-align: center;
+        }
+        .card a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+    <script>
+        async function fetchAssets() {
+            try {
+                const response = await fetch('http://localhost:4400/rest/2.0/assets');
+                const data = await response.json();
+                
+                const assetContainer = document.getElementById('asset-container');
+                assetContainer.innerHTML = '';
+                
+                data.results.forEach(asset => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    
+                    const link = document.createElement('a');
+                    link.href = `http://localhost:4400/asset/${asset.id}`;
+                    link.textContent = asset.name;
+                    link.target = "_blank";
+                    
+                    const type = document.createElement('p');
+                    type.textContent = `Type: ${asset.type?.name || 'Unknown'}`;
+                    
+                    card.appendChild(link);
+                    card.appendChild(type);
+                    assetContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('❌ Failed to fetch assets:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Assets</h1>
+    <button onclick="fetchAssets()">Load Assets</button>
+    <div id="asset-container" class="container"></div>
+</body>
+</html>
